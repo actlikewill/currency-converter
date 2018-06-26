@@ -1,3 +1,27 @@
+function getCurrencyList() {  
+  const url = `https://free.currencyconverterapi.com/api/v5/currencies`;
+
+  fetch(url).then(function(response) {
+    return response.json();
+  }).then(function(data) {      
+    const values = data.results;    
+    let optionsList = "";
+ 
+      for(var key in values){
+      const currencyId = key;
+      const currencyItem = values[key].currencyName;      
+      optionsList += `<option value="${currencyId}">${currencyItem}</option>`;                 
+    } 
+ 
+  document.getElementById("list1").innerHTML = optionsList;
+  document.getElementById("list2").innerHTML = optionsList;
+
+  }).catch(function() {
+    console.log("Booo");
+  });
+}
+
+getCurrencyList();
 
 const addForm = document.forms['frm1'];
 addForm.addEventListener('submit', (e) => {
@@ -21,6 +45,5 @@ addForm.addEventListener('submit', (e) => {
   }).catch(function() {
     console.log("Booo");
   });
-
 });
 
