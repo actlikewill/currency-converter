@@ -1,3 +1,10 @@
+navigator.serviceWorker.register('sw.js').then(function() {
+  console.log('Registration Worked!');
+}).catch(function(){
+  console.log('Registration Failed');
+});
+
+
 function getCurrencyList() {  
   const url = `https://free.currencyconverterapi.com/api/v5/currencies`;
 
