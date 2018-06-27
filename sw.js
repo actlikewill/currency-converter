@@ -1,5 +1,5 @@
 self.addEventListener('install', function(event) {
-    var urlsToCache = 
+    
     event.waitUntil(
         caches.open('currency-converter-static-v1').then(function(cache) {
             return cache.addAll(
