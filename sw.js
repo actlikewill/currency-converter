@@ -19,16 +19,11 @@ self.addEventListener('install', function(event) {
 });
 
 
-self.addEventListener('fetch', function(event){
-    console.log(event.request);
+self.addEventListener('fetch', function(event){    
     event.respondWith(
-      fetch(event.request).then(function (response) {
-        if (response.status === 404) {
-            return new Response('A really Cool 404 Page  - Not Found Here');
-        }
-        return response;
-      }).catch(function() {
-          return new Response('You are offline');
+      caches.match(event.request).then(function(response) {
+        if (response) return response;
+        return fetch(event.request);
       })        
     );
 });
