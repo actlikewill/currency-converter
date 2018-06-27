@@ -1,0 +1,22 @@
+* {
+    padding: 0 ;
+    margin: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;}
+
+
+.container {
+    width:60%;
+    margin-top: 50px;
+
+}
+
+
+.heading {
+    margin:15px 0;
+}
+
+
+

@@ -5,7 +5,7 @@ function getCurrencyList() {
     return response.json();
   }).then(function(data) {      
     const values = data.results;    
-    let optionsList = "";
+    let optionsList = `<option value="">Select Currency</option>`;
  
       for(var key in values){
       const currencyId = key;
@@ -33,7 +33,7 @@ addForm.addEventListener('submit', (e) => {
 
   const query = `${from}_${to}`;
   const url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
-  document.getElementById("url").innerHTML = url;
+  // document.getElementById("url").innerHTML = url;
   
   fetch(url).then(function(response) {
     return response.json();
