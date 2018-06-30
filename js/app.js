@@ -30,6 +30,45 @@ function getCurrencyList() {
 
 getCurrencyList();
 
+let query;
+
+function saveDataToDB(saveData){
+  let request = window.indexedDB.open("CurrencyRatesDB", 1),
+  db,
+  tx,
+  store,
+  index;
+
+  request.onupgradeneeded = function(e) {
+    let db = request.result,
+        store = db.createObjectStore("CurrencyRatesStore", {
+          keyPath: "query"})          
+  };
+
+  request.onerror = function(e) {
+    console.log("Booo:" + e.target.errorCode);
+  }
+
+  request.onsuccess = function(e) {
+    db = request.result;
+    tx = db.transaction("CurrencyRatesStore", "readwrite");
+    store = tx.objectStore("CurrencyRatesStore");
+
+    db.onerror = function(e) {
+      console.log("Booo:" + e.target.errorCode);
+    }
+
+    let putData = {"query" : query, "ratio":saveData[query]};
+
+    store.add(putData);
+
+    console.log(putData);  
+    
+  }
+console.log("The data is: " + saveData[query]);
+
+}
+
 const addForm = document.forms['frm1'];
 addForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -38,19 +77,49 @@ addForm.addEventListener('submit', (e) => {
   const to = formData.get('to');
   const amount = formData.get('amount');
 
-  const query = `${from}_${to}`;
+  query = `${from}_${to}`;
   const url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
   // document.getElementById("url").innerHTML = url;
   
   fetch(url).then(function(response) {
     return response.json();
   }).then(function(data) {
+    const saveData = data;
     const ratio = data[query];
     const result = amount * ratio;  
-    console.log(result);
-    document.getElementById("result").innerHTML = result;    
-  }).catch(function() {
-    console.log("Booo");
+    // console.log(result);
+    // console.log(saveData[query]);
+    saveDataToDB(saveData);
+    document.getElementById("result").innerHTML = result;
+    
+    
+
+  }).then(function(){
+    let req = indexedDB.open("CurrencyRatesDB", 1);
+    req.onsuccess = function (e) {
+        let db = e.target.result;
+        let tx = db.transaction("CurrencyRatesStore", "readwrite");
+        let store = tx.objectStore("CurrencyRatesStore");
+        let dbData = store.get(query);
+        dbData.onerror = function () {
+          document.getElementById("db").innerHTML = ("Offline Unavailable");
+        }
+
+        dbData.onsuccess = function () {
+          let dbRatio = dbData.result.ratio;
+          document.getElementById("db").innerHTML = ("Offline Results : " + amount * dbRatio);
+        }
+
+    }
+  })
+  .catch(function() {
+    console.log("Booo: " + e.target.errorCode);
   });
 });
+
+
+
+
+
+
 
