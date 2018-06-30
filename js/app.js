@@ -32,6 +32,7 @@ getCurrencyList();
 
 let query;
 
+
 function saveDataToDB(saveData){
   let request = window.indexedDB.open("CurrencyRatesDB", 1),
   db,
@@ -69,13 +70,14 @@ console.log("The data is: " + saveData[query]);
 
 }
 
+
 const addForm = document.forms['frm1'];
 addForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const from = formData.get('from');
   const to = formData.get('to');
-  const amount = formData.get('amount');
+  let amount = formData.get('amount');
 
   query = `${from}_${to}`;
   const url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
@@ -86,36 +88,31 @@ addForm.addEventListener('submit', (e) => {
   }).then(function(data) {
     const saveData = data;
     const ratio = data[query];
-    const result = amount * ratio;  
-    // console.log(result);
-    // console.log(saveData[query]);
+    let result = amount * ratio;  
     saveDataToDB(saveData);
-    document.getElementById("result").innerHTML = result;
-    
-    
+    document.getElementById("result").innerHTML = result;   
 
-  }).then(function(){
-    let req = indexedDB.open("CurrencyRatesDB", 1);
+  }).catch(function(){
+    console.log("You are offline")     
+ let req = indexedDB.open("CurrencyRatesDB", 1);
     req.onsuccess = function (e) {
         let db = e.target.result;
         let tx = db.transaction("CurrencyRatesStore", "readwrite");
         let store = tx.objectStore("CurrencyRatesStore");
         let dbData = store.get(query);
         dbData.onerror = function () {
-          document.getElementById("db").innerHTML = ("Offline Unavailable");
+          document.getElementById("result").innerHTML = ("Offline Unavailable");
         }
 
         dbData.onsuccess = function () {
           let dbRatio = dbData.result.ratio;
-          document.getElementById("db").innerHTML = ("Offline Results : " + amount * dbRatio);
+          document.getElementById("result").innerHTML = ("Offline Results : " + amount * dbRatio);
         }
-
-    }
-  })
-  .catch(function() {
-    console.log("Booo: " + e.target.errorCode);
-  });
+      }    
+  })  
 });
+
+
 
 
 
